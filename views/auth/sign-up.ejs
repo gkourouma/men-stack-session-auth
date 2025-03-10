@@ -7,7 +7,7 @@
   </head>
   <body>
     <h1>Create a new account!</h1>
-    <form action="" method="">
+    <form action="/auth/sign-up" method="POST">
       <label for="username">Username:</label>
       <input type="text" name="username" id="username" />
       <label for="password">Password:</label>
@@ -16,5 +16,12 @@
       <input type="password" name="confirmPassword" id="confirmPassword" />
       <button type="submit">Sign up</button>
     </form>
+
+    <nav>
+      <ul>
+        <li><a href="/auth/sign-in">Sign In</a></li>
+        <li><a href="/">Home</a></a></li>
+      </ul>
+    </nav>
   </body>
 </html>
