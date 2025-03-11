@@ -23,7 +23,7 @@ router.post("/sign-up", async (req, res) => {
   const user = await User.create(req.body);
   res.send(`Thanks for signing up ${user.username}`);
 
-  // res.render("sign-up.ejs");
+  res.render("sign-up.ejs");
 });
 
 //GET sign in page. Send a page that has a login form

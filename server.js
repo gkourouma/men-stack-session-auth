@@ -13,6 +13,7 @@ const session = require("express-session");
 const port = process.env.PORT || "3000";
 
 const authController = require("./controllers/auth.js");
+const fruitsController = require("./controllers/fruits.js");
 
 mongoose.connect(process.env.MONGODB_URI);
 
@@ -26,7 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(methodOverride("_method"));
 // Morgan for logging HTTP requests
 app.use(morgan("dev"));
-// new
+// new session middle ware
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -34,6 +35,18 @@ app.use(
     saveUninitialized: false, //if you set it to true you are creating space that might not even be used
   })
 );
+
+//anything that uses session comes after the session middleware
+app.use((req, res, next) => {
+  if (req.session.message) {
+    res.locals.message = req.session.message; //res.locals makes info available to templates. res is the response object and is part of our communication to the client
+    req.session.message = null; //clears out req.session.message
+  }
+  next(); //next calls the next middlware function or route handler
+});
+
+app.use("/auth", authController);
+app.use("/fruits", fruitsController);
 
 app.get("/", (req, res) => {
   res.render("index.ejs", {
@@ -49,8 +62,21 @@ app.get("/vip-lounge", (req, res) => {
   }
 });
 
-app.use("/auth", authController);
+//catch all route should always be listed last
+app.get("*", (req, res) => {
+  res.status(404).render("error.ejs", { msg: "Page not found!" });
+});
 
+// server.js
+const handleServerError = (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.log(`Warning! Port ${port} is already in use!`);
+  } else {
+    console.log('Error:', error);
+  }
+}
+
+//custom error function
 app.listen(port, () => {
   console.log(`The express app is ready on port ${port}!`);
-});
+}).on('error', handleServerError);
